@@ -1,4 +1,4 @@
-# QRL_project
+# partitioned quantum reinforcmenet learning
 Dimensionality reduction in quantum reinforcement learning agents. 
 
 Quantum reinforcement learning is typically done with a reuploading PQC. This scheme has been proven to work quite well, however, 
