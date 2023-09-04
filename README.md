@@ -5,10 +5,6 @@ Quantum reinforcement learning is typically done with a reuploading PQC. This sc
 for a n dimensional state space one would need an n qubit circuit. This can become problematic, especially with the currnt size
 of quantum computers. 
 
-In this project I explore the idea of trading classical and quantum recourses. We take a simple REINFORCE agent with 
-a reuploading PQC and "chop it in halve" (in a clever way). Then, we attempt to train it in the cartpole environment. 
-
-
 ![Image](https://i.imgur.com/LLFTvMP.jpg)
 
 # how to run?
