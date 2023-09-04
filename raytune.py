@@ -15,14 +15,6 @@ from ray.tune.schedulers import ASHAScheduler, HyperBandScheduler
 from Agent.agent import PGAgent
 
 #ray.init("auto")
-
-
-# def train_pg_agent(config):
-#     # Create the agent with environment and initialize hyperparamters
-#     agent = PGAgent(config=config)
-#     final_stats = agent.learn()
-#     return final_stats
-
         
 class MyTrainableClass(tune.Trainable):
     def setup(self, config):
