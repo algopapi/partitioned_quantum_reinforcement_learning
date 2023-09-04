@@ -33,7 +33,7 @@ class MyTrainableClass(tune.Trainable):
         self.batch = self.batch + 1
 
         # Gather the trajectories
-        episodes = self.agent.gather_trajectories_s()
+        episodes = self.agent.gather_trajectories()
 
         # Group states, actions and returns in numpy arrays
         # (make a single array of all states, actions and returns from all trajectories)
