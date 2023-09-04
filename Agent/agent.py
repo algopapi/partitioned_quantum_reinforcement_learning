@@ -75,7 +75,7 @@ class PGAgent():
         self.path = '{}_{}_LR'.format(
             self.agent_name, self.env_name)
         self.model_name = os.path.join(self.save_path, self.path)
-        self.x_l = config["x_l"]
+
 
         # Define the Model
         if self.partitioned:
