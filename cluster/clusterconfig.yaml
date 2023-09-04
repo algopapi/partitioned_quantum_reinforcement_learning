@@ -1,0 +1,97 @@
+# An unique identifier for the head node and workers of this cluster.
+cluster_name: default
+
+# The maximum number of workers nodes to launch in addition to the head
+# node.
+max_workers: 120
+
+# The autoscaler will scale up the cluster faster with higher upscaling speed.
+# E.g., if the task requires adding more nodes then autoscaler will gradually
+# scale up the cluster in chunks of upscaling_speed*currently_running_nodes.
+# This number should be > 0.
+upscaling_speed: 4.0
+
+# This executes all commands on all nodes in the docker container,
+# and opens all the necessary ports to support the Ray cluster.
+# Empty string means disabled.
+docker:
+  image: "rayproject/ray-ml:latest-gpu" # You can change this to latest-cpu if you don't need GPU support and want a faster startup
+  container_name: "ray_container"
+  pull_before_run: True
+  run_options: # Extra options to pass into "docker run"
+    - --ulimit nofile=65536:65536
+
+idle_timeout_minutes: 5
+
+provider:
+  type: aws
+  region: eu-central-1
+  availability_zone: eu-central-1a, eu-central-1b, eu-central-1c
+  cache_stopped_nodes: True
+
+auth:
+  ssh_user: ubuntu
+
+available_node_types:
+  ray.head.default:
+    resources: {}
+    node_config:
+      InstanceType: m5.large
+      ImageId: ami-0383bd0c1fc4c63ec # Default AMI for eu-central-1
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeSize: 240
+  ray.worker.default:
+    min_workers: 0
+    max_workers: 120
+    resources: { "memory": 15032385536 } # Since you want to run 1 experiment per node, set CPU resources to 1
+    node_config:
+      InstanceType: r6i.large
+      ImageId: ami-0383bd0c1fc4c63ec # Default AMI for eu-central-1
+      InstanceMarketOptions:
+        MarketType: spot
+        SpotOptions:
+          MaxPrice: "0.045" # Max Hourly Price
+
+head_node_type: ray.head.default
+
+file_mounts: { "/tmp/QRL_project": "/home/algopapi/QRL_project/" }
+
+cluster_synced_files: []
+
+file_mounts_sync_continuously: False
+
+rsync_exclude:
+  - "**/.git"
+  - "**/.git/**"
+
+rsync_filter:
+  - ".gitignore"
+
+initialization_commands: []
+
+setup_commands:
+  - sudo apt-get update
+  - sudo apt-get install -y python3.8 python3.8-dev python3.8-venv
+  - python3.8 -m venv ray_env # Create a virtual environment named ray_env
+  - echo 'source ray_env/bin/activate' >> ~/.bashrc # Add this line to activate the virtual environment on login
+  - source ~/.bashrc
+  - sudo apt-get install -y curl
+  - curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+  - sudo python3.8 get-pip.py
+  - rm get-pip.py
+  - source ray_env/bin/activate # Activate the virtual environment before installing the packages
+  - pip install -r /tmp/QRL_project/requirements.txt
+
+head_setup_commands: []
+
+worker_setup_commands: []
+
+head_start_ray_commands:
+  - ray stop
+  - ray start --head --port=6379 --object-manager-port=8076 --autoscaling-config=~/ray_bootstrap_config.yaml
+
+worker_start_ray_commands:
+  - ray stop
+  - ray start --address=$RAY_HEAD_IP:6379 --object-manager-port=8076
