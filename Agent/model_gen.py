@@ -38,8 +38,7 @@ class Part_ReuploadingPQC(tf.keras.Model):
         self.softmax = tf.keras.layers.Softmax() # Softmax
 
     def rescale_lambdas(self, state_bounds):
-        x = self.partitioned_pqc.rescale_lambdas(state_bounds)
-        return x
+        self.partitioned_pqc.rescale_lambdas(state_bounds)
 
     def call(self, inputs):
         x = self.partitioned_pqc([inputs])
