@@ -20,4 +20,3 @@ Here we implement the circuit as a custom tensorflow layer which sits inside a c
 This makes it, unfortunatly, very slow. 
 
 
-
